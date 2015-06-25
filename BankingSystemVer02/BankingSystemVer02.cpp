@@ -1,7 +1,7 @@
 /*
 * Name: Minjoo Kwon
-* BankingSystemVer02
-* BankingSystemVer02.cpp
+* Project: BankingSystemVer02
+* BankingSystemVer02.cpp (main)
 */
 
 #include <iostream>
@@ -111,6 +111,8 @@ void withdrawl(Account *customers[], int numPeople_in)
 		if (customers[i]->GetID() == accID)
 		{
 			cout << "Withdrawl amount: $"; cin >> withdrawl;
+			if (customers[i]->GetBalance() - withdrawl < 0)
+				cout << "You don't have enough money to withdraw. " << endl; return;
 			customers[i]->Withdrawl(withdrawl);
 			cout << "Withdrawn successfully." << endl;
 			return;
@@ -124,10 +126,9 @@ void viewInfo(Account *customers[], int numPeople)
 {
 	for (int i = 0; i < numPeople; ++i)
 	{
-		cout << "Account ID: " << customers[i]->GetID() << endl;
-		cout << "Name: " << customers[i]->GetName()<< endl;
-		cout << "Balance: $" << customers[i]->GetBalance()<< endl;
-		cout << endl << endl;
+		cout << endl;
+		customers[i]->ShowInfos(numPeople); 
+		cout << endl;
 	}
 
 }
