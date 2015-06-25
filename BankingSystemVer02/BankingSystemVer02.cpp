@@ -36,6 +36,10 @@ public:
 	{
 		return accountID;
 	}
+	int GetBalance() const
+	{
+		return balance;
+	}
 
 	void AddBalance(int balance_in)
 	{
@@ -45,9 +49,11 @@ public:
 	{
 		balance -= withdrawl_in;
 	}
-
-	void viewInfo(Account *customers[], int numPeople);
-
+	
+	~Account()
+	{
+		delete cusName;
+	}
 };
 
 Account::Account(char *name_in, int ID_in, int balance_in)
@@ -64,6 +70,7 @@ void ShowMenu();
 void createAccount(Account *customers[], int numPeople_in);
 void deposit(Account *customers[], int numPeople_in);
 void withdrawl(Account *customers[], int numPeople_in);
+void viewInfo(Account *customers[], int numPeople);
 
 int main()
 {
@@ -89,9 +96,11 @@ int main()
 			withdrawl(customers, numPeople); 
 			break;
 		case INQUIRE:
-			customers->viewInfo(customers, numPeople); 
+			viewInfo(customers, numPeople); 
 			break;
 		case EXIT:
+			for (int i = 0; i < numPeople; ++i)
+				delete customers[i];
 			return 0;
 		default:
 			cout << "Illegal selection." << endl;
@@ -118,7 +127,7 @@ void createAccount(Account *customers[], int numPeople_in)
 	int balance_in;
 
 	cout << "[Create a New Account]" << endl;
-	cout << "Name: "; cin >> name_in;
+	cout << "First Name: "; cin >> name_in;
 	cout << "Account ID: "; cin >> accountID_in;
 	cout << "Deposit Amount: $"; cin >> balance_in;
 	cout << endl;
@@ -155,10 +164,10 @@ void withdrawl(Account *customers[], int numPeople_in)
 	int withdrawl;
 	for (int i = 0; i < numPeople_in; ++i)
 	{
-		if (customers[i]->GetID == accID)
+		if (customers[i]->GetID() == accID)
 		{
 			cout << "Withdrawl amount: $"; cin >> withdrawl;
-			customers[i]->balance -= withdrawl;
+			customers[i]->Withdrawl(withdrawl);
 			cout << "Withdrawn successfully." << endl;
 			return;
 		}
@@ -166,13 +175,14 @@ void withdrawl(Account *customers[], int numPeople_in)
 	cout << "ID not found" << endl;
 
 }
-void Account::viewInfo(Account *customers, int numPeople) const
+
+void viewInfo(Account *customers[], int numPeople) 
 {
 	for (int i = 0; i < numPeople; ++i)
 	{
-		cout << "Account ID: " << customers[i].accountID << endl;
-		cout << "Name: " << customers[i].cusName << endl;
-		cout << "Balance: $" << customers[i].balance << endl;
+		cout << "Account ID: " << customers[i]->GetID() << endl;
+		cout << "Name: " << customers[i]->GetName()<< endl;
+		cout << "Balance: $" << customers[i]->GetBalance()<< endl;
 		cout << endl << endl;
 	}
 
