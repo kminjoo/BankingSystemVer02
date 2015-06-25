@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 /*
 * Name: Minjoo Kwon
 * BankingSystemVer02
@@ -26,24 +27,48 @@ private:
 	char *cusName;
 public:
 	Account() : accountID(0), balance(0) {}
-	char* GetName(){ return cusName; }
-	void createAccount(Account *customers, int numPeople_in);
-	void deposit(Account *customers, int numPeople_in);
-	void viewInfo(Account *customers, int numPeople) const;
-	void withdrawl(Account *customers, int numPeople_in);
-	~Account()
+	Account(char *name_in, int ID_in, int balance_in);
+	char* GetName() const
 	{
-
+		return cusName;
 	}
+	int GetID() const
+	{
+		return accountID;
+	}
+
+	void AddBalance(int balance_in)
+	{
+		balance += balance_in;
+	}
+	void Withdrawl(int withdrawl_in)
+	{
+		balance -= withdrawl_in;
+	}
+
+	void viewInfo(Account *customers[], int numPeople);
 
 };
 
+Account::Account(char *name_in, int ID_in, int balance_in)
+{
+	const int LEN = strlen(name_in);
+	cusName = new char[LEN];
+	strcpy(cusName, name_in);
+
+	accountID = ID_in;
+	balance = balance_in;
+}
+
 void ShowMenu();
+void createAccount(Account *customers[], int numPeople_in);
+void deposit(Account *customers[], int numPeople_in);
+void withdrawl(Account *customers[], int numPeople_in);
 
 int main()
 {
 	int numPeople = 0;
-	Account *customers = new Account[100];
+	Account *customers[100];
 
 	enum { MAKE = 1, DEPOSIT, WITHDRAW, INQUIRE, EXIT };
 	while (1){
@@ -54,14 +79,14 @@ int main()
 		switch (choice)
 		{
 		case MAKE:
-			customers->createAccount(customers, numPeople);
+			createAccount(customers, numPeople);
 			++numPeople;
 			break;
 		case DEPOSIT:
-			customers->deposit(customers, numPeople);
+			deposit(customers, numPeople);
 			break;
 		case WITHDRAW:
-			customers->withdrawl(customers, numPeople); 
+			withdrawl(customers, numPeople); 
 			break;
 		case INQUIRE:
 			customers->viewInfo(customers, numPeople); 
@@ -86,41 +111,33 @@ void ShowMenu()
 }
 
 
-void Account::createAccount(Account *customers, int numPeople_in)
+void createAccount(Account *customers[], int numPeople_in)
 {
 	int accountID_in;
-	char *name_in;
+	char name_in[100];
 	int balance_in;
 
 	cout << "[Create a New Account]" << endl;
 	cout << "Name: "; cin >> name_in;
-	const int LEN = strlen(name_in);
-	name_in = new char[LEN];
-	strcpy(customers->GetName(), name_in);
-
 	cout << "Account ID: "; cin >> accountID_in;
 	cout << "Deposit Amount: $"; cin >> balance_in;
 	cout << endl;
 
-	customers[numPeople_in].accountID = accountID_in;
-	customers[numPeople_in].cusName = name_in;
-	customers[numPeople_in].balance += balance_in;
-
+	customers[numPeople_in] = new Account(name_in, accountID_in, balance_in);
 }
 
-void Account::deposit(Account *customers, int numPeople_in)
+void deposit(Account *customers[], int numPeople_in)
 {
 	int accID_in;
 	int deposit;
 	cout << "[Deposit]" << endl;
 	cout << "Account ID: "; cin >> accID_in;
-
 	for (int i = 0; i < numPeople_in; ++i)
 	{
-		if (customers[i].accountID == accID_in)
+		if (customers[i]->GetID() == accID_in)
 		{
 			cout << "Deposit amount: $"; cin >> deposit;
-			customers[i].balance += deposit;
+			customers[i]->AddBalance(deposit);
 			cout << "Desposited successfully." << endl;
 			return;
 		}
@@ -130,7 +147,7 @@ void Account::deposit(Account *customers, int numPeople_in)
 	cout << endl;
 }
 
-void Account::withdrawl(Account *customers, int numPeople_in)
+void withdrawl(Account *customers[], int numPeople_in)
 {
 	cout << "[Withdrawl]" << endl;
 	int accID;
@@ -138,10 +155,10 @@ void Account::withdrawl(Account *customers, int numPeople_in)
 	int withdrawl;
 	for (int i = 0; i < numPeople_in; ++i)
 	{
-		if (customers[i].accountID == accID)
+		if (customers[i]->GetID == accID)
 		{
 			cout << "Withdrawl amount: $"; cin >> withdrawl;
-			customers[i].balance -= withdrawl;
+			customers[i]->balance -= withdrawl;
 			cout << "Withdrawn successfully." << endl;
 			return;
 		}
@@ -149,7 +166,7 @@ void Account::withdrawl(Account *customers, int numPeople_in)
 	cout << "ID not found" << endl;
 
 }
-void Account::viewInfo(Account *customers, int numPeople)
+void Account::viewInfo(Account *customers, int numPeople) const
 {
 	for (int i = 0; i < numPeople; ++i)
 	{
